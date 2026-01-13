@@ -1,3 +1,5 @@
+## Prosjektet er under arbeid
+
 # TeamBoard (Monorepo)
 
 TeamBoard er et lite **Mini-SaaS-demoprosjekt** bygget som et **monorepo** med
