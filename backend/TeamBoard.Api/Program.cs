@@ -4,11 +4,11 @@ using TeamBoard.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DB
+/// Database
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("Default") ?? "Data Source=teamboard.db"));
 
-// Identity + roller + API-endepunkter (/register, /login, ...)
+/// Identity + roller + API-endepunkter (/register, /login, ...)
 builder.Services.AddIdentityCore<IdentityUser>(opt =>
 {
     opt.User.RequireUniqueEmail = true;
@@ -22,11 +22,11 @@ builder.Services.AddAuthentication()
 
 builder.Services.AddAuthorization();
 
-// Swagger
+/// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// CORS for Next.js dev server
+/// CORS for Next.js dev server
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("frontend", p =>
@@ -45,19 +45,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("frontend");
 
-// Ikke bruk HTTPS redirect nå (du kjører http://localhost:5018)
 // app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Identity endpoints
+/// Identity endpoints
 app.MapIdentityApi<IdentityUser>();
 
-// Helse-sjekk (åpen)
+/// Helse sjekk (åpen)
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
-// "Hvem er jeg" (krever auth)
+/// "Kven er eg" (krever auth)
 app.MapGet("/me", (System.Security.Claims.ClaimsPrincipal user) =>
 {
     return Results.Ok(new
