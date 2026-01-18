@@ -14,7 +14,7 @@ export default function DashboardPage() {
 // Todo: legg til useEffect for å hente brukerdata ved innlasting av sida
 
   useEffect(() => {
-    const token = localStorage.getItem("accesstoken");
+    const token = localStorage.getItem("token");
     if (!token) {
       router.push("/login");
       return;
@@ -26,23 +26,23 @@ export default function DashboardPage() {
       }, [router]);
 
       function logout(){
-        localStorage.removeItem("accesstoken");
+        localStorage.removeItem("token");
         router.push("/login");
       }
 
       return(
-        <main style = {{padding: "24"}}>
-          <h1>Dashboard</h1>
+        <main style = {{padding: "24" , display:"grid", placeItems:"center",minHeight:"100vh", backgroundColor: "white"}}>
+          <h1 style = {{color: "black"}}>Dashboard</h1>
 
-          <button>
+          <button onClick={logout} style = {{color: "black", border: "1px solid black"}}>
             Logout
           </button>
 
-          <div style = {{marginTop: "16px"}}>
+          <div style = {{marginTop: "16px", color: "black"}}>
             {error && <p style={{color: "red"}}>{error}</p>}
             {!error && userData && <p>Laster...</p>}
             {userData && (
-              <pre style ={{padding: 12, background: "#f4f4f4"}}>
+              <pre style ={{padding: 12, background: "#ffffff", color:"black"}}>
                 {JSON.stringify(userData, null, 2)}
               </pre>
             )}
