@@ -27,3 +27,30 @@ export async function me(token: string) {
 
   return res.json();
 }
+
+
+/**
+ * Hent prosjekter for den innloggede brukaren
+ * @param token 
+ */
+export async function getProjects(token: string){
+  const res = await fetch("http://localhost:5018/projects", {
+    headers: { Authorization: `Bearer ${token}` },
+});
+}
+
+
+/**
+ * Lag eit nytt prosjekt
+ * @param token 
+ * @param name 
+ */
+export async function createProject(token: string, name: string){
+  const res = await fetch("http://localhost:5018/projects", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({name}),
+  });
+  if (!res.ok) throw new Error("Kunne ikkje oprette prosjekt.");
+  return res.json();
+}

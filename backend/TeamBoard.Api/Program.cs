@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TeamBoard.Api.Data;
+using TeamBoard.Api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,9 @@ app.UseAuthorization();
 
 /// Identity endpoints
 app.MapIdentityApi<IdentityUser>();
+
+
+/// Todo: Lag prosjekt endpoints her
 
 /// Helse sjekk (åpen)
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));

@@ -12,6 +12,15 @@ samsvar mellom frontend og backend.
 
 ---
 
+## Funksjonalitet (planlagt)
+
+- Registrere brukar og logge inn
+- Admin/bruker roller som styrer tilgang
+- Dashboard som viser inlogga bruker med mulighet til å logge ut
+- Opprette og endre på prosjekter med kobling til DB
+
+---
+
 ## Teknologi
 
 ### Backend
