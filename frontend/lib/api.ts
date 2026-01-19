@@ -37,6 +37,8 @@ export async function getProjects(token: string){
   const res = await fetch("http://localhost:5018/projects", {
     headers: { Authorization: `Bearer ${token}` },
 });
+  if (!res.ok) throw new Error("kunne ikkje hente prosjekter.")
+    return res.json();
 }
 
 
@@ -51,6 +53,6 @@ export async function createProject(token: string, name: string){
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({name}),
   });
-  if (!res.ok) throw new Error("Kunne ikkje oprette prosjekt.");
+  if (!res.ok) throw new Error("Kunne ikkje oprette prosjektet.");
   return res.json();
 }

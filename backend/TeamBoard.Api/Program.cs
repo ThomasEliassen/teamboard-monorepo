@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TeamBoard.Api.Data;
 using TeamBoard.Api.Models;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,11 +61,47 @@ app.MapIdentityApi<IdentityUser>();
 
 /// Todo: Lag prosjekt endpoints her
 
+app.MapGet("/projects", async (ClaimsPrincipal user, AppDbContext db) =>
+{
+    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+    if(string.IsNullOrWhiteSpace(userId))
+    return Results.Unauthorized();
+
+    var projects = await db.Projects.Where(p => p.OwnerUserId == userId)
+    .OrderByDescending(p => p.CreatedAt)
+    .ToListAsync();
+
+    return Results.Ok(projects);
+});
+
+app.MapPost("/projects", async (ClaimsPrincipal user, AppDbContext db, ProjectCreateRequest req) =>
+{
+    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (string.IsNullOrWhiteSpace(userId))
+    return Results.Unauthorized();
+
+    if (string.IsNullOrWhiteSpace(req.Name))
+    return Results.BadRequest("Vennligst skriv inn navn");
+
+    var project = new Project
+    {
+        Name = req.Name.Trim(),
+        OwnerUserId = userId
+    };
+
+    db.Projects.Add(project);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/projects/{project.Id}", project);
+});
+
+
+
 /// Helse sjekk (åpen)
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 /// "Kven er eg" (krever auth)
-app.MapGet("/me", (System.Security.Claims.ClaimsPrincipal user) =>
+app.MapGet("/me", (ClaimsPrincipal user) =>
 {
     return Results.Ok(new
     {
@@ -71,3 +111,5 @@ app.MapGet("/me", (System.Security.Claims.ClaimsPrincipal user) =>
 }).RequireAuthorization();
 
 app.Run();
+
+record ProjectCreateRequest(string Name);
