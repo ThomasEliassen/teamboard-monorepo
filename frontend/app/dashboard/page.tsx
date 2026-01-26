@@ -7,11 +7,18 @@ import { me } from "@/lib/api";
  * Dashboard side
  */
 
+type Project = {
+  id: number;
+  name: string;
+  createdAt: string;
+};
+//Todo: Fullfør prosjekt implementasjon.
 export default function DashboardPage() {
   const router = useRouter();
   const [userData, setUserData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-// Todo: legg til useEffect for å hente brukerdata ved innlasting av sida
+  const [projects, setProjects] = useState<Project[]>([]);
+  const []
 
   useEffect(() => {
     const token = localStorage.getItem("token");

@@ -72,7 +72,7 @@ app.MapGet("/projects", async (ClaimsPrincipal user, AppDbContext db) =>
     .ToListAsync();
 
     return Results.Ok(projects);
-});
+}).RequireAuthorization();
 
 app.MapPost("/projects", async (ClaimsPrincipal user, AppDbContext db, ProjectCreateRequest req) =>
 {
@@ -93,7 +93,7 @@ app.MapPost("/projects", async (ClaimsPrincipal user, AppDbContext db, ProjectCr
     await db.SaveChangesAsync();
 
     return Results.Created($"/projects/{project.Id}", project);
-});
+}).RequireAuthorization();
 
 
 
