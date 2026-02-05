@@ -30,7 +30,7 @@ export async function me(token: string) {
 
 
 /**
- * Hent prosjekter for den innloggede brukaren
+ * Henter alle prosjekter for den innloggede brukaren
  * @param token 
  */
 export async function getProjects(token: string){
@@ -41,9 +41,24 @@ export async function getProjects(token: string){
     return res.json();
 }
 
+/**
+ * Henter spesifikt prosjekt basert på prosjektets id
+ * @param token 
+ * @param id 
+ * @returns 
+ */
+export async function getProject(token: string, id: number) {
+  const res = await fetch(`${API_BASE}/projects/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (res.status === 404) throw new Error("Prosjektet finnes ikke (eller du har ikke tilgang).");
+  if (!res.ok) throw new Error("Kunne ikkje hente prosjekt");
+  return res.json();
+}
+
 
 /**
- * Lag eit nytt prosjekt
+ * Lagar eit nytt prosjekt
  * @param token 
  * @param name 
  */

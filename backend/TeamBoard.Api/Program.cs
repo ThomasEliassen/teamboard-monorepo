@@ -95,6 +95,16 @@ app.MapPost("/projects", async (ClaimsPrincipal user, AppDbContext db, ProjectCr
     return Results.Created($"/projects/{project.Id}", project);
 }).RequireAuthorization();
 
+app.MapGet("/projects/{id:int}", async (int id, ClaimsPrincipal user, AppDbContext db) =>
+{
+    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (string.IsNullOrWhiteSpace(userId)) return Results.Unauthorized();
+
+    var project = await db.Projects.FirstOrDefaultAsync(p => p.Id == id && p.OwnerUserId == userId);
+    if (project is null) return Results.NotFound();
+
+    return Results.Ok(project);
+}).RequireAuthorization();
 
 
 /// Helse sjekk (åpen)
