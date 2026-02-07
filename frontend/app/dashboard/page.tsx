@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getProjects, me, createProject } from "@/lib/api";
+import { getProjects, me, createProject, deleteProject } from "@/lib/api";
 import Link from "next/link";
 
 /**
@@ -56,6 +56,19 @@ export default function DashboardPage() {
     setProjects(updated);
   }
 
+  async function onDeleteProject(projectId: number, projectName: string){
+    const accept = confirm(`Do you want to delete "${projectName}"?`);
+    if(!accept) return;
+
+    const token = localStorage.getItem("token");
+    if(!token) return;
+
+    await deleteProject(token, projectId);
+
+    const updated = await getProjects(token);
+    setProjects(updated);
+  }
+
   return (
     <main style={{ padding: "24", display: "grid", placeItems: "center", minHeight: "100vh", backgroundColor: "white" }}>
       <h1 style={{ color: "black" }}>Dashboard</h1>
@@ -72,24 +85,26 @@ export default function DashboardPage() {
           </p>
         )}
 
-        <section style={{ marginTop: 24 }}>
+        <section style={{ marginTop: 24, border: "1px solid black" }}>
           <h2>Prosjekter</h2>
 
           <div style={{ display: "flex", gap: 8 }}>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Prosjektnavn"
+              placeholder="Prosjektnavn..."
               style={{ flex: 1, padding: 10 }}
             />
-            <button onClick={onCreateProject}>Legg til</button>
+            <button style={{marginRight : 5}} onClick={onCreateProject}>Legg til</button>
           </div>
           <ul>
             {projects.map((p) => (
-              <li key={p.id}>
+              <li key={p.id} style={{position: "relative", border: "1px solid black"}}>
                 <Link href={`/projects/${p.id}`}>{p.name}</Link>
+                <button style={{position: "absolute", right: 8}} onClick={() => onDeleteProject(p.id, p.name)}>Slett</button>
               </li>
             ))}
+            
           </ul>
         </section>
       </div>

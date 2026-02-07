@@ -106,6 +106,21 @@ app.MapGet("/projects/{id:int}", async (int id, ClaimsPrincipal user, AppDbConte
     return Results.Ok(project);
 }).RequireAuthorization();
 
+app.MapDelete("/projects/{id:int}", async (int id, ClaimsPrincipal user, AppDbContext db) =>
+{
+    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (string.IsNullOrWhiteSpace(userId))
+    return Results.Unauthorized();
+
+    var project = await db.Projects.FirstOrDefaultAsync(p => p.Id == id && p.OwnerUserId == userId);
+    if (project is null) return Results.NotFound();
+
+    db.Projects.Remove(project);
+    await db.SaveChangesAsync();
+
+    return Results.NoContent();
+}).RequireAuthorization();
+
 
 /// Helse sjekk (åpen)
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));

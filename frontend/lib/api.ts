@@ -34,7 +34,7 @@ export async function me(token: string) {
  * @param token 
  */
 export async function getProjects(token: string){
-  const res = await fetch("http://localhost:5018/projects", {
+  const res = await fetch(`${API_BASE}/projects`, {
     headers: { Authorization: `Bearer ${token}` },
 });
   if (!res.ok) throw new Error("kunne ikkje hente prosjekter.")
@@ -63,11 +63,24 @@ export async function getProject(token: string, id: number) {
  * @param name 
  */
 export async function createProject(token: string, name: string){
-  const res = await fetch("http://localhost:5018/projects", {
+  const res = await fetch(`${API_BASE}/projects`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({name}),
   });
   if (!res.ok) throw new Error("Kunne ikkje oprette prosjektet.");
   return res.json();
+}
+
+/**
+ * Slett spesifikt prosjekt
+ * @param token 
+ * @param name 
+ */
+export async function deleteProject(token: string, id: number){
+  const res = await fetch(`${API_BASE}/projects/${id}`, {
+    method: "DELETE",
+    headers: {Authorization: `Bearer ${token}`}
+  });
+  if(!res.ok) throw new Error("Kunne ikkje slette prosjektet.")
 }
