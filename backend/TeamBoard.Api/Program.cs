@@ -122,6 +122,42 @@ app.MapDelete("/projects/{id:int}", async (int id, ClaimsPrincipal user, AppDbCo
 }).RequireAuthorization();
 
 
+app.MapGet("/projects/{id:int}/tasks", async (int id, ClaimsPrincipal user, AppDbContext db) =>
+{
+    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (string.IsNullOrWhiteSpace(userId)) return Results.Unauthorized();
+
+    var tasks = await db.TaskItems.Where(t => t.ProjectId == id)
+    .OrderByDescending(t => t.CreatedAt)
+    .ToListAsync();
+
+    return Results.Ok(tasks);
+}).RequireAuthorization();
+
+app.MapPost("/projects/{id:int}/tasks", async (int id, ClaimsPrincipal user, AppDbContext db, TaskCreateRequest req) =>
+{
+    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (string.IsNullOrWhiteSpace(userId)) return Results.Unauthorized();
+
+    if (string.IsNullOrWhiteSpace(req.Title))
+    return Results.BadRequest("Vennligst skriv inn tittel.");
+
+    var task = new TaskItem
+    {
+        Title = req.Title.Trim(),
+        ProjectId = id,
+        IsDone = false
+    };
+
+    db.Add(task);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/tasks/{task.Id}", task);
+}).RequireAuthorization();
+
+//app.MapPatch()
+
+
 /// Helse sjekk (åpen)
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
@@ -138,3 +174,4 @@ app.MapGet("/me", (ClaimsPrincipal user) =>
 app.Run();
 
 record ProjectCreateRequest(string Name);
+record TaskCreateRequest(string Title);
