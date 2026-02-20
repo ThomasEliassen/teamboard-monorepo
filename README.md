@@ -18,6 +18,7 @@ samsvar mellom frontend og backend.
 - Admin/bruker roller som styrer tilgang
 - Dashboard som viser inlogga bruker med mulighet til å logge ut
 - Opprette og endre på prosjekter med kobling til DB
+- Legge til oppgåver for hvert prosjekt
 
 ---
 

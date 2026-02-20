@@ -84,3 +84,49 @@ export async function deleteProject(token: string, id: number){
   });
   if(!res.ok) throw new Error("Kunne ikkje slette prosjektet.")
 }
+
+/**
+ * Henter alle tasks.
+ * @param token 
+ * @param projectId 
+ * @returns 
+ */
+export async function getTasks(token: string, projectId: number){
+  const res = await fetch(`${API_BASE}/projects/${projectId}/tasks`, {
+    headers: {Authorization: `Bearer ${token}`}
+  });
+  if(!res.ok) throw new Error("Kunne ikkje henke tasks.")
+  return res.json();
+}
+
+/**
+ * Oppretter task.
+ * @param token 
+ * @param projectId 
+ * @param title 
+ * @returns 
+ */
+export async function createTask(token: string, projectId: number, title: string){
+  const res = await fetch(`${API_BASE}/projects/${projectId}/tasks`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json", Authorization: `Bearer ${token}`},
+    body: JSON.stringify({title})
+  });
+  if(!res.ok) throw new Error("Kunne ikkje opprette task.")
+  return res.json();
+}
+
+/**
+ * Toggle som kan brukes for å avgjere om task er ferdig eller ikkje.
+ * @param token 
+ * @param taskId 
+ * @returns 
+ */
+export async function toggleTask(token: string, taskId: number){
+  const res = await fetch(`${API_BASE}/tasks/${taskId}/toggle`, {
+    method: "PATCH",
+    headers: {Authorization: `Bearer ${token}`}
+  });
+  if(!res.ok) throw new Error("Kunne ikkje oppdatere task.")
+  return res.json();
+}

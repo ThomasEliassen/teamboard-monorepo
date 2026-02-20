@@ -5,7 +5,7 @@ import { getProjects, me, createProject, deleteProject } from "@/lib/api";
 import Link from "next/link";
 
 /**
- * Dashboard side
+ * Dashboard side med oversikt over prosjekter og muligheit for å registrere eller slette prosjekter
  */
 
 type Project = {
@@ -13,7 +13,7 @@ type Project = {
   name: string;
   createdAt: string;
 };
-//Todo: Fullfør prosjekt implementasjon.
+
 export default function DashboardPage() {
   const router = useRouter();
   const [userData, setUserData] = useState<any>(null);

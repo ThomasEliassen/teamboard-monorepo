@@ -155,7 +155,19 @@ app.MapPost("/projects/{id:int}/tasks", async (int id, ClaimsPrincipal user, App
     return Results.Created($"/tasks/{task.Id}", task);
 }).RequireAuthorization();
 
-//app.MapPatch()
+app.MapPatch("/tasks/{taskId:int}/toggle", async (int taskId, ClaimsPrincipal user, AppDbContext db) =>
+{
+    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (string.IsNullOrWhiteSpace(userId)) return Results.Unauthorized();
+
+    var task = await db.TaskItems.FirstOrDefaultAsync(t => t.Id == taskId);
+    if(task == null) return Results.NotFound();
+
+    task.IsDone = !task.IsDone;
+    await db.SaveChangesAsync();
+
+    return Results.Ok(task);
+}).RequireAuthorization();
 
 
 /// Helse sjekk (åpen)
