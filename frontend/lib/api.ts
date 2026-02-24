@@ -130,3 +130,11 @@ export async function toggleTask(token: string, taskId: number){
   if(!res.ok) throw new Error("Kunne ikkje oppdatere task.")
   return res.json();
 }
+
+export async function deleteTask(token: string, taskId: number){
+  const res = await fetch(`${API_BASE}/tasks/${taskId}` ,{
+    method: "DELETE",
+    headers: {Authorization: `Bearer ${token}`}
+  });
+  if(!res.ok) throw new Error("Kunne ikkje slette task.")
+}

@@ -169,6 +169,20 @@ app.MapPatch("/tasks/{taskId:int}/toggle", async (int taskId, ClaimsPrincipal us
     return Results.Ok(task);
 }).RequireAuthorization();
 
+app.MapDelete("tasks/{taskId:int}", async(int taskId, ClaimsPrincipal user, AppDbContext db) =>
+{
+    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+    if(string.IsNullOrWhiteSpace(userId)) return Results.Unauthorized();
+
+    var task = await db.TaskItems.FirstOrDefaultAsync(t => t.Id == taskId);
+    if(task == null) return Results.NotFound();
+
+    db.TaskItems.Remove(task);
+    await db.SaveChangesAsync();
+
+    return Results.NoContent();
+}).RequireAuthorization();
+
 
 /// Helse sjekk (åpen)
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));

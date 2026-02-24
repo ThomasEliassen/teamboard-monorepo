@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { getProject, getTasks, createTask, toggleTask } from "@/lib/api";
+import { getProject, getTasks, createTask, toggleTask, deleteTask } from "@/lib/api";
 
 type Project = {
   id: number;
   name: string;
-  createdAtUtc: string;
+  createdAt: string;
 };
 
 type TaskItem = {
@@ -26,6 +26,8 @@ export default function ProjectDetailsPage() {
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<TaskItem[]>([])
   const [newTitle, setNewTitle] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   /**
@@ -49,6 +51,9 @@ export default function ProjectDetailsPage() {
     const token = tokenHandler();
     if(!token) return;
 
+    setLoading(true);
+    setError(null);
+
     try{
       const [p,t] = await Promise.all([getProject(token,projectId), getTasks(token,projectId)]);
       setProject(p);
@@ -56,6 +61,8 @@ export default function ProjectDetailsPage() {
     }
     catch (e:any){
       setError(e.message ?? "Kunne ikkje hente tasks eller prosjektet.")
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -64,6 +71,7 @@ export default function ProjectDetailsPage() {
     const id = Number(rawId);
     if (!Number.isFinite(id)) {
       setError("Ugyldig prosjekt-id");
+      setLoading(false);
       return;
     }
 
@@ -78,8 +86,10 @@ export default function ProjectDetailsPage() {
     if(!token) return;
 
     const title = newTitle.trim();
-    if(!title) return;
-    if(!project) return;
+    if(!token || !project) return;
+
+    setCreating(true);
+    setError(null);
 
     try{
       await createTask(token, project.id, title);
@@ -88,6 +98,8 @@ export default function ProjectDetailsPage() {
       setTasks(updated);
     } catch(e:any) {
       setError(e.message ?? "kunne ikkje opprette task");
+    } finally{
+      setCreating(false);
     }
   }
 
@@ -96,9 +108,13 @@ export default function ProjectDetailsPage() {
    */
   async function onToggleTask(taskId: number) {
     const token = tokenHandler();
-    if(!token) return;
-    if(!project) return;
+    if(!token || !project) return;
 
+    setTasks((prev) =>
+      prev.map((t) => (t.id === taskId ? { ...t, isDone: !t.isDone } : t))
+    );
+
+    setError(null);
     try{
       await toggleTask(token, taskId)
     } catch (e:any){
@@ -106,28 +122,86 @@ export default function ProjectDetailsPage() {
     }
   }
 
+  async function onDeleteTask(taskId: number, title: string){
+    const token = tokenHandler();
+    if(!token || !project) return;
+
+    const popup = confirm(`Vil du slette "${title}"?`);
+    if(!popup) return;
+
+    setError(null);
+
+    try{
+      await deleteTask(token, taskId);
+      setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    }catch (e:any){
+      setError(e.message ?? "Kunne ikkje slette task");
+    }
+  }
+
   return (
-    <main style={{ padding: "24px", maxWidth: 800 }}>
+    <main style={{ padding: "24px", maxWidth: 800, backgroundColor: "white", color:"black" }}>
       <div style={{ marginBottom: 16 }}>
         <Link href="/dashboard">← Tilbake til dashboard</Link>
       </div>
 
-      <h1>Prosjekt</h1>
+      {!loading && error && <p style={{ color: "crimson" }}>{error}</p>}
 
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+      {!loading && !error && project && (
+        <>
+          <h1 style={{ marginBottom: 6 }}>{project.name}</h1>
+          <p style={{ marginTop: 0, opacity: 0.75 }}>
+            Oppretta: {new Date(project.createdAt).toLocaleString()}
+          </p>
 
-      {project && (
-        <div style={{ marginTop: 12 }}>
-          <p>
-            <strong>Navn:</strong> {project.name}
-          </p>
-          <p style={{ opacity: 0.75 }}>
-            Opprettet: {new Date(project.createdAtUtc).toLocaleString()}
-          </p>
-        </div>
-      )}
+          <section style={{ marginTop: 24 }}>
+            <h2>Tasks</h2>
+
+            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+              <input
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                placeholder="Ny task..."
+                style={{ flex: 1, padding: 10 }}
+              />
+              <button onClick={onAddTask} disabled={creating}>
+                {creating ? "Lagrer..." : "Legg til"}
+              </button>
+            </div>
+
+            {tasks.length === 0 ? (
+              <p style={{ marginTop: 12, opacity: 0.8 }}>
+                Ingen tasks enda. Legg til din første!
+              </p>
+            ) : (
+              <ul style={{ marginTop: 12, paddingLeft: 18 }}>
+                {tasks.map((t) => (
+                  <li
+                    key={t.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      marginBottom: 8,
+                      position: "relative"
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={t.isDone}
+                      onChange={() => onToggleTask(t.id)}
+                    />
+                    <span style={{ textDecoration: t.isDone ? "line-through" : "none" }}>
+                      {t.title}
+                    </span>
+                    <button style={{position: "absolute", right: 8}} onClick={() => onDeleteTask(t.id, t.title)}>Slett</button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </>
+         )}
     </main>
   );
-
-
 }
