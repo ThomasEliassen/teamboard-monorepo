@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TeamBoard.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d0d7d85dc068a22c8c97055d11d45cd468370bc4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5ffb290a3c8ad36e9dae4128f8d255ac0f1bb6d6")]
 [assembly: System.Reflection.AssemblyProductAttribute("TeamBoard.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TeamBoard.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

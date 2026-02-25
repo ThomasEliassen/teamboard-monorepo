@@ -29,6 +29,21 @@ export async function me(token: string) {
 }
 
 
+export async function register(email: string, password: string){
+  const res = await fetch(`${API_BASE}/register`, {
+    method: "POST",
+    headers: {"Content-type" : "application/json"},
+    body: JSON.stringify({email, password})
+  });
+
+  if(!res.ok){
+    const text = await res.text();
+    throw new Error(text || "Feil ved registrering av bruker");
+  }
+  return true;
+}
+
+
 /**
  * Henter alle prosjekter for den innloggede brukaren
  * @param token 
