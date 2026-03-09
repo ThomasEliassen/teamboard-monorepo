@@ -10,6 +10,11 @@ Prosjektet er laget for å demonstrere en moderne og jobbrelevant fullstack-arki
 Prosjektet er satt opp som ett Git-repository (monorepo) for enklere utvikling og bedre
 samsvar mellom frontend og backend.
 
+## Kjør med Docker Compose
+
+```bash
+docker compose up --build
+
 ---
 
 ## Funksjonalitet (planlagt)
@@ -18,7 +23,7 @@ samsvar mellom frontend og backend.
 - Admin/bruker roller som styrer tilgang
 - Dashboard som viser inlogga bruker med mulighet til å logge ut
 - Opprette og endre på prosjekter med kobling til DB
-- Legge til oppgåver(tasks) for hvert prosjekt
+- Legge til oppgåver(tasks) for kvart prosjekt
 - Muligheit for å huke av om oppgåver er ferdige, og slette om nødvendig
 
 ---

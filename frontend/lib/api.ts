@@ -36,9 +36,17 @@ export async function register(email: string, password: string){
     body: JSON.stringify({email, password})
   });
 
-  if(!res.ok){
-    const text = await res.text();
-    throw new Error(text || "Feil ved registrering av bruker");
+  if (!res.ok) {
+    const data = await res.json();
+
+    // Identity returnerer errors som et objekt med arrays
+    if (data?.errors) {
+      const firstKey = Object.keys(data.errors)[0];
+      const message = data.errors[firstKey]?.[0];
+      throw new Error(message || "Registrering feilet");
+    }
+
+    throw new Error("Registrering feilet");
   }
   return true;
 }
