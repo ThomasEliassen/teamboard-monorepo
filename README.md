@@ -1,49 +1,130 @@
-## Prosjektet er under arbeid
+# TeamBoard
 
-# TeamBoard (Monorepo)
+> Prosjektet er under utvikling.
 
-TeamBoard er et lite **Mini-SaaS-demoprosjekt** bygget som et **monorepo** med
-ASP.NET Core som backend og Next.js (React + TypeScript) som frontend.
+TeamBoard er eit Mini-SaaS-demoprosjekt for organisering av prosjekt og oppgåver. Prosjektet er bygd som eit monorepo med ASP.NET Core Web API på backenden og Next.js, React og TypeScript på frontenden.
 
-Prosjektet er laget for å demonstrere en moderne og jobbrelevant fullstack-arkitektur.
+Målet er å demonstrere ein moderne og relevant fullstack-arkitektur med autentisering, tilgangskontroll, databaseintegrasjon, API-kommunikasjon og eit responsivt brukargrensesnitt.
 
-Prosjektet er satt opp som ett Git-repository (monorepo) for enklere utvikling og bedre
-samsvar mellom frontend og backend.
+## Skjermbilete
 
-## Kjør med Docker Compose
+### Registrering
 
-```bash
-docker compose up --build
+![Registreringssida i TeamBoard](docs/screenshots/register.png)
 
----
+### Innlogging
 
-## Funksjonalitet (planlagt)
+![Innloggingssida i TeamBoard](docs/screenshots/login.png)
 
-- Registrere brukar og logge inn
-- Admin/bruker roller som styrer tilgang
-- Dashboard som viser inlogga bruker med mulighet til å logge ut
-- Opprette og endre på prosjekter med kobling til DB
-- Legge til oppgåver(tasks) for kvart prosjekt
-- Muligheit for å huke av om oppgåver er ferdige, og slette om nødvendig
+### Dashboard
 
----
+![Dashboard med prosjektoversikt](docs/screenshots/dashboard.png)
 
-## Teknologi
+### Prosjekt og oppgåver
+
+![Prosjektside med oppgåver](docs/screenshots/project-tasks.png)
+
+## Funksjonalitet
+
+- Registrering og innlogging med ASP.NET Core Identity
+- Autentisering med bearer-token
+- Beskytta sider og API-endepunkt
+- Prosjekt knytte til den innlogga brukaren
+- Opprette, vise og slette prosjekt
+- Opprette og slette oppgåver i eit prosjekt
+- Markere oppgåver som fullførte eller ikkje fullførte
+- Dashboard med oversikt over eigne prosjekt
+- Persistent SQLite-database i lokalt utviklingsmiljø
+- Responsivt brukargrensesnitt med felles navigasjon og tilbakemelding ved lasting og feil
+
+## Teknologistakk
 
 ### Backend
+
+- .NET 10
 - ASP.NET Core Web API
+- ASP.NET Core Identity
 - Entity Framework Core
-- ASP.NET Core Identity (brukere og roller)
-- SQLite (lokalt utviklingsmiljø)
+- SQLite
+- Minimal APIs
+- Swagger/OpenAPI i utviklingsmiljø
 
 ### Frontend
-- Next.js (App Router)
-- React
-- TypeScript
 
----
+- Next.js 16 med App Router
+- React 19
+- TypeScript
+- Tailwind CSS 4
+
+### Utvikling og drift
+
+- Docker
+- Docker Compose
+- Git-monorepo
 
 ## Prosjektstruktur
 
-/backend – ASP.NET Core API og database
-/frontend – Next.js webapplikasjon
+```text
+teamboard-monorepo/
+├── backend/
+│   └── TeamBoard.Api/       # ASP.NET Core API, datamodellar og migrasjonar
+├── frontend/                # Next.js-applikasjon
+│   ├── app/                 # Sider og ruter med App Router
+│   ├── components/          # Delte React-komponentar
+│   └── lib/                 # API-klient
+├── docs/
+│   └── screenshots/         # Skjermbilete brukt i README
+├── docker-compose.yml
+└── README.md
+```
+
+## Køyr prosjektet lokalt
+
+### Føresetnader
+
+- Docker Desktop må vere installert og starta.
+
+### Start applikasjonen
+
+Køyr denne kommandoen frå rotmappa i prosjektet:
+
+```bash
+docker compose up --build
+```
+
+Den første oppstarten kan ta litt tid fordi Docker må laste ned og byggje nødvendige image.
+
+Når begge tenestene er starta, er dei tilgjengelege her:
+
+- Frontend: <http://localhost:3000>
+- Backend/API: <http://localhost:5018>
+- Helsesjekk: <http://localhost:5018/health>
+
+Stopp tenestene med `Ctrl+C`. Fjern deretter containerane med:
+
+```bash
+docker compose down
+```
+
+SQLite-databasen blir lagra lokalt i `backend/TeamBoard.Api/teamboard.db` og blir ikkje sletta av `docker compose down`.
+
+## Aktuelle ruter
+
+- `/register` – opprett brukar
+- `/login` – logg inn
+- `/dashboard` – vis og administrer prosjekt
+- `/projects/{id}` – vis prosjektet og administrer oppgåver
+
+## Vidare planar
+
+- Redigering av prosjekt og oppgåver
+- Prosjektmedlemmer og invitasjonar
+- Roller og meir detaljert tilgangskontroll
+- Oppgåvestatus, prioritet, frist og ansvarleg brukar
+- Søk, filtrering og sortering
+- Automatiserte testar
+- Produksjonsdeploy av frontend og backend
+
+## Status
+
+TeamBoard er eit portefølje- og læringsprosjekt under aktiv utvikling. Funksjonalitet og arkitektur kan derfor bli endra etter kvart som prosjektet blir vidareutvikla.

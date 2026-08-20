@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { login } from "@/lib/api";
-import Link from "next/link"
-
+import { AuthShell, Field } from "@/components/auth-shell";
+import { MailIcon, LockIcon, SpinnerIcon } from "@/components/icons";
 
 /**
- * login side der brukaren kan logge inn med epost og passord og sendast til dashboard sida ved suksess
+ * Login side der brukaren kan logge inn med epost og passord og sendast til dashboard sida ved suksess
  */
 export default function LoginPage() {
   const router = useRouter();
@@ -26,48 +27,72 @@ export default function LoginPage() {
       const token = data.accessToken;
       localStorage.setItem("token", token);
       router.push("/dashboard");
-    }
-
-    catch (err: any) {
+    } catch (err: any) {
       setError(err.message ?? "Innlogging feilet, vennligst prøv igjen.");
       setLoading(false);
     }
-
-
   }
-  //todo: 
 
   return (
-    //<main style = {{padding :"24", maxWidth: "400px", backgroundColor: "white", borderRadius: "8px", color: "black", fontSize: "16px"}}>
-    <main style={{ padding: "24", display: "grid", placeItems: "center", minHeight: "100vh", backgroundColor: "#f0f0f0" }}>
-      <div style={{ marginBottom: "16px", color: "red", textAlign: "center" }}>
-        <h1 style={{ color: "black", fontSize: "32px", textAlign: "center" }}>Login</h1>
+    <AuthShell
+      title="Velkommen tilbake"
+      subtitle="Logg inn for å fortsette til TeamBoard"
+      footer={
+        <>
+          Ny her?{" "}
+          <Link
+            href="/register"
+            className="font-medium text-primary transition-colors hover:text-primary/80"
+          >
+            Opprett konto
+          </Link>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <Field
+          id="email"
+          label="Epost"
+          type="email"
+          value={email}
+          placeholder="deg@epost.no"
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          icon={<MailIcon className="h-5 w-5" />}
+        />
 
-        <form onSubmit={handleSubmit}
-          style={{ display: "grid", gap: "10px", marginTop: "20px", backgroundColor: "transparent", borderRadius: "8px" }}>
+        <Field
+          id="password"
+          label="Passord"
+          type="password"
+          value={password}
+          placeholder="••••••••"
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          icon={<LockIcon className="h-5 w-5" />}
+        />
 
-          <label style={{ gap: "4px", color: "black", textAlign: "center" }}>
-            <input type="email" value={email} placeholder="Epost" onChange={(e) => setEmail(e.target.value)} required
-              style={{ color: "black", padding: 6, border: "1px solid #ccc", borderRadius: "4px" }} />
-          </label>
+        {error ? (
+          <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {error}
+          </p>
+        ) : null}
 
-          <label style={{ gap: "4px", color: "black", textAlign: "center" }}>
-            <input type="password" value={password} placeholder="Passord" onChange={(e) => setPassword(e.target.value)} required
-              style={{ color: "black", padding: 6, border: "1px solid #ccc", borderRadius: "4px" }} />
-          </label>
-
-          <button disabled={loading} type="submit"
-            style={{ padding: 6, backgroundColor: "green", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
-            {loading ? "logger inn..." : "login"}
-          </button>
-
-          {error && <p style={{ color: "red" }}>{error}</p>}
-        </form>
-        <p style={{ marginTop: 12 }}>
-          Ny her? <Link href="/register">Opprett konto</Link>
-        </p>
-      </div>
-    </main>
-  )
+        <button
+          disabled={loading}
+          type="submit"
+          className="mt-1 flex items-center justify-center gap-2 rounded-md bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {loading ? (
+            <>
+              <SpinnerIcon className="h-4 w-4" />
+              Logger inn...
+            </>
+          ) : (
+            "Logg inn"
+          )}
+        </button>
+      </form>
+    </AuthShell>
+  );
 }
-
